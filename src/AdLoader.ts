@@ -1,6 +1,9 @@
 import { AdManager } from "./AdManager";
-import type { AdLoaderDetails } from "./NativeAdManagerMobileAds";
 import { PackageConfig, logInfo } from "./log";
+import type {
+  AdAssets,
+  AdLoaderDetails
+} from "./spec/NativeAdManagerMobileAds";
 import {
   AdState,
   type AdSpecification,
@@ -9,7 +12,7 @@ import {
 import { adStateToString } from "./utils";
 
 export class AdLoader<
-  AdFormatType,
+  AdFormatType extends AdAssets,
   AdTargetingOptions = Record<string, string>
 > {
   private specification: AdSpecification;

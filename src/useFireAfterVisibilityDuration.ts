@@ -29,7 +29,7 @@ export function useFireAfterVisibilityDuration(
   condition: boolean = true
 ) {
   const duration = useRef<number>(0);
-  const lastTimestamp = useRef<number | undefined>();
+  const lastTimestamp = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined;

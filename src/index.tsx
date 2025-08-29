@@ -4,9 +4,9 @@ export { useVisibleCustomNativeAd } from "./useVisibleCustomNativeAd";
 export { AdQueueLoader } from "./AdQueueLoader";
 
 export * from "./AdManager";
-export * from "./NativeAdManagerMobileAds";
+export * from "./spec/NativeAdManagerMobileAds";
 
-export * from "./UserMessagingPlatform";
 export * from "./log";
 export * from "./types";
+export * from "./UserMessagingPlatform";
 export * from "./utils";

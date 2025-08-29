@@ -21,7 +21,7 @@ import com.google.android.gms.ads.nativead.NativeCustomFormatAd;
 import java.util.List;
 import java.util.Set;
 
-public class AdManagerMobileAdsModule extends AdManagerMobileAdsSpec {
+public class AdManagerMobileAdsModule extends com.admanagermobileads.AdManagerMobileAdsSpec {
   public static final String NAME = "AdManagerMobileAds";
 
   AdManagerMobileAdsModule(ReactApplicationContext context) {
@@ -162,7 +162,7 @@ public class AdManagerMobileAdsModule extends AdManagerMobileAdsSpec {
   }
 
   @ReactMethod
-  public void setIsDisplayingOnViewForLoader(String loaderId, int viewTag, Promise promise) {
+  public void setIsDisplayingOnViewForLoader(String loaderId, double viewTag, Promise promise) {
     getReactApplicationContext().getNativeModule(UIManagerModule.class).addUIBlock(nativeViewHierarchyManager -> {
       try {
         View nativeAdViewContainer = null;

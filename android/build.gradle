@@ -1,17 +1,18 @@
 buildscript {
+  ext.getExtOrDefault = {name ->
+    return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['AdManagerMobileAds_' + name]
+  }
+
   repositories {
     google()
     mavenCentral()
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.2.1"
+    classpath "com.android.tools.build:gradle:8.7.2"
+    // noinspection DifferentKotlinGradleVersion
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
   }
-}
-
-def reactNativeArchitectures() {
-  def value = rootProject.getProperties().get("reactNativeArchitectures")
-  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
 def isNewArchitectureEnabled() {
@@ -19,14 +20,9 @@ def isNewArchitectureEnabled() {
 }
 
 apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
 
-if (isNewArchitectureEnabled()) {
-  apply plugin: "com.facebook.react"
-}
-
-def getExtOrDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["AdManagerMobileAds_" + name]
-}
+apply plugin: "com.facebook.react"
 
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AdManagerMobileAds_" + name]).toInteger()
@@ -82,14 +78,19 @@ android {
 
   sourceSets {
     main {
-      if (isNewArchitectureEnabled()) {
+      java.srcDirs += [
+        "generated/java",
+        "generated/jni"
+      ]
+
+      if(isNewArchitectureEnabled()){
         java.srcDirs += [
-          "src/newarch",
-          // This is needed to build Kotlin project with NewArch enabled
-          "${project.buildDir}/generated/source/codegen/java"
+          "src/newarch"
         ]
-      } else {
-        java.srcDirs += ["src/oldarch"]
+      }else{
+        java.srcDirs += [
+          "src/oldarch"
+        ]
       }
     }
   }
@@ -100,23 +101,21 @@ repositories {
   google()
 }
 
+def kotlin_version = getExtOrDefault("kotlinVersion")
 
 def googleMobileAdsVersion = "+"
 def googleUmpVersion = "+"
 dependencies {
-  // For < 0.71, this will be from the local maven repo
-  // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
-  //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
+  implementation "com.facebook.react:react-android"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   implementation("com.google.android.gms:play-services-ads:${googleMobileAdsVersion}")
   api "com.google.android.ump:user-messaging-platform:${googleUmpVersion}"
+
 }
 
-if (isNewArchitectureEnabled()) {
-  react {
-    jsRootDir = file("../src/")
-    libraryName = "AdManagerMobileAds"
-    codegenJavaPackageName = "com.admanagermobileads"
-  }
+react {
+  jsRootDir = file("../src/")
+  libraryName = "AdManagerMobileAds"
+  codegenJavaPackageName = "com.admanagermobileads"
 }

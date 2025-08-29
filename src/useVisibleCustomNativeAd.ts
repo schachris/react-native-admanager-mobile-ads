@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import type { AdQueueLoader } from "./AdQueueLoader";
 import { logInfo } from "./log";
+import { AdAssets } from "./spec/NativeAdManagerMobileAds";
 import { AdState } from "./types";
 import {
   CustomNativeAdHookReturnType,
@@ -10,7 +11,10 @@ import {
 import { useFireAfterVisibilityDuration } from "./useFireAfterVisibilityDuration";
 import { adStateToString } from "./utils";
 
-export function useVisibleCustomNativeAd<AdFormatType, Targeting>({
+export function useVisibleCustomNativeAd<
+  AdFormatType extends AdAssets,
+  Targeting
+>({
   visible,
   adLoader,
   msToDisplayTillImpressionRecording = 2000,

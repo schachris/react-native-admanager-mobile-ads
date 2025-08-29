@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import { Text, type StyleProp, type ViewStyle } from "react-native";
 
 import {
+  AdAssets,
   CustomNativeAdHookReturnType,
   useVisibleCustomNativeAd
 } from "react-native-admanager-mobile-ads";
@@ -10,7 +11,7 @@ import { VisibilityAwareView } from "react-native-visibility-aware-view";
 
 import type { AdQueueLoader } from "../../../src/AdQueueLoader";
 
-export type CustomNativeAdProps<AdFormatType, Targeting> = {
+export type CustomNativeAdProps<AdFormatType extends AdAssets, Targeting> = {
   children?: (
     props: CustomNativeAdHookReturnType<AdFormatType, Targeting> & {
       visible: boolean;
@@ -25,7 +26,7 @@ export type CustomNativeAdProps<AdFormatType, Targeting> = {
   identifier?: string;
 };
 
-export function CustomNativeAd<AdFormatType, Targeting>(
+export function CustomNativeAd<AdFormatType extends AdAssets, Targeting>(
   props: CustomNativeAdProps<AdFormatType, Targeting>
 ) {
   const {

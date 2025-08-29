@@ -118,7 +118,8 @@
 
 + (void) setTestDeviceIds: (NSArray *) testDeviceIds {
     NSMutableArray * deviceIdsWithSimulator = [NSMutableArray arrayWithArray:testDeviceIds];
-    [deviceIdsWithSimulator addObject:GADSimulatorID];
+  // simulator is enabled by default as test-device https://developers.google.com/ad-manager/mobile-ads-sdk/ios/rel-notes
+   // [deviceIdsWithSimulator addObject:GADSimulatorID];
     GADMobileAds.sharedInstance.requestConfiguration.testDeviceIdentifiers = deviceIdsWithSimulator;
 }
 

@@ -1,6 +1,7 @@
 import { AdLoader } from "./AdLoader";
 import { Queue } from "./Queue";
 import { PackageConfig, logInfo } from "./log";
+import { AdAssets } from "./spec/NativeAdManagerMobileAds";
 import type { AdSpecification, GADAdRequestOptions } from "./types";
 
 function guidGenerator() {
@@ -11,7 +12,7 @@ function guidGenerator() {
 }
 
 export class AdQueueLoader<
-  AdFormatType,
+  AdFormatType extends AdAssets,
   AdTargetingOptions = Record<string, string>
 > extends Queue<AdLoader<AdFormatType, AdTargetingOptions>> {
   private minNumberOfItems: number = 0;

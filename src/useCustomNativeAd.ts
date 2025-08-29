@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AdLoader } from "./AdLoader";
 import { AdQueueLoader } from "./AdQueueLoader";
-import { AdDetails } from "./NativeAdManagerMobileAds";
 import { PackageConfig, logInfo } from "./log";
+import { AdAssets, AdDetails } from "./spec/NativeAdManagerMobileAds";
 import { AdState, type AdSpecification } from "./types";
 import { adStateToString } from "./utils";
 
@@ -17,36 +17,36 @@ export type AdError = {
   error?: Error;
 };
 
-export type AdDisplaying<AdFormatType> = {
+export type AdDisplaying<AdFormatType extends AdAssets> = {
   ad: AdDetails<AdFormatType>;
   state: AdState.Displaying;
 };
 
-export type AdReceived<AdFormatType> = {
+export type AdReceived<AdFormatType extends AdAssets> = {
   ad: AdDetails<AdFormatType>;
   state: AdState.Received;
   targeting?: Record<string, string>;
 };
 
-export type AdImpressionRecorded<AdFormatType, Targeting> = {
+export type AdImpressionRecorded<AdFormatType extends AdAssets, Targeting> = {
   ad: AdDetails<AdFormatType>;
   state: AdState.Impression;
   targeting?: Targeting;
 };
 
-export type AdClicked<AdFormatType, Targeting> = {
+export type AdClicked<AdFormatType extends AdAssets, Targeting> = {
   ad: AdDetails<AdFormatType>;
   state: AdState.Clicked;
   targeting?: Targeting;
 };
 
-export type AdOutdated<AdFormatType, Targeting> = {
+export type AdOutdated<AdFormatType extends AdAssets, Targeting> = {
   ad: AdDetails<AdFormatType>;
   state: AdState.Outdated;
   targeting?: Targeting;
 };
 
-type AdStates<AdFormatType, Targeting> =
+type AdStates<AdFormatType extends AdAssets, Targeting> =
   | AdLoading
   | AdError
   | AdReceived<AdFormatType>
@@ -55,7 +55,7 @@ type AdStates<AdFormatType, Targeting> =
   | AdClicked<AdFormatType, Targeting>
   | AdOutdated<AdFormatType, Targeting>;
 
-function getAdState<AdFormatType, Targeting>(
+function getAdState<AdFormatType extends AdAssets, Targeting>(
   ad?: AdLoader<AdFormatType, Targeting>
 ): AdStates<AdFormatType, Targeting> {
   if (ad) {
@@ -84,7 +84,7 @@ function getAdState<AdFormatType, Targeting>(
   };
 }
 
-function getOne<AdFormatType, Targeting>(config: {
+function getOne<AdFormatType extends AdAssets, Targeting>(config: {
   loader: AdQueueLoader<AdFormatType, Targeting>;
   instanceId?: string;
 }) {
@@ -116,7 +116,7 @@ function getOne<AdFormatType, Targeting>(config: {
   );
 }
 
-export function useCustomNativeAd<AdFormatType, Targeting>(
+export function useCustomNativeAd<AdFormatType extends AdAssets, Targeting>(
   queue: AdQueueLoader<AdFormatType, Targeting>,
   options?: {
     renew_attempts?: number;
@@ -138,7 +138,7 @@ export function useCustomNativeAd<AdFormatType, Targeting>(
     renew_afterError: 0,
     impressions: 0
   });
-  const ref = useRef<AdLoader<AdFormatType, Targeting>>();
+  const ref = useRef<AdLoader<AdFormatType, Targeting>>(undefined);
   if (!ref.current) {
     ref.current = getOne<AdFormatType, Targeting>({
       loader: queue,
@@ -164,7 +164,7 @@ export function useCustomNativeAd<AdFormatType, Targeting>(
     };
   }, []);
 
-  const upcomingAdRef = useRef<AdLoader<AdFormatType, Targeting>>();
+  const upcomingAdRef = useRef<AdLoader<AdFormatType, Targeting>>(undefined);
   const renew = useCallback(() => {
     logInfo(
       log,
@@ -296,7 +296,7 @@ export function useCustomNativeAd<AdFormatType, Targeting>(
   } as CustomNativeAdHookReturnType<AdFormatType, Targeting>;
 }
 
-export type CustomNativeAdHookReturnType<AdFormatType, T> = {
+export type CustomNativeAdHookReturnType<AdFormatType extends AdAssets, T> = {
   state: AdState;
   id: string;
   ad?: AdDetails<AdFormatType>;

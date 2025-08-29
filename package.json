@@ -2,11 +2,16 @@
   "name": "react-native-admanager-mobile-ads",
   "version": "0.3.0",
   "description": "A wrapper around Google Ad Manager - Mobile Ads SDK for extreme flexibility",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "source": "./src/index.tsx",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "src",
     "lib",
@@ -14,6 +19,7 @@
     "ios",
     "cpp",
     "*.podspec",
+    "react-native.config.js",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -28,7 +34,7 @@
   "scripts": {
     "example": "yarn workspace react-native-admanager-mobile-ads-example",
     "test": "jest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
@@ -42,14 +48,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/schachris/react-native-admanager-mobile-ads.git.git"
+    "url": "git+https://github.com/schachris/react-native-admanager-mobile-ads.git"
   },
   "author": "Christian Schaffrath <mail@christianschaffrath.de> (https://www.christianschaffrath.de)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/schachris/react-native-admanager-mobile-ads.git/issues"
+    "url": "https://github.com/schachris/react-native-admanager-mobile-ads/issues"
   },
-  "homepage": "https://github.com/schachris/react-native-admanager-mobile-ads.git#readme",
+  "homepage": "https://github.com/schachris/react-native-admanager-mobile-ads#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -68,29 +74,30 @@
     }
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^17.0.2",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@eslint/compat": "^1.2.7",
+    "@eslint/eslintrc": "^3.3.0",
+    "@eslint/js": "^9.22.0",
     "@evilmartians/lefthook": "^1.5.0",
-    "@react-native/eslint-config": "^0.73.1",
-    "@release-it/conventional-changelog": "^5.0.0",
+    "@react-native-community/cli": "15.0.1",
+    "@react-native/eslint-config": "^0.78.0",
+    "@release-it/conventional-changelog": "^9.0.2",
     "@types/jest": "^29.5.5",
-    "@types/react": "^18.2.44",
-    "commitlint": "^17.0.2",
+    "@types/react": "^19.0.0",
+    "commitlint": "^19.6.1",
     "del-cli": "^5.1.0",
-    "eslint": "^8.51.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.1",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.3",
     "jest": "^29.7.0",
     "prettier": "^3.0.3",
     "prettier-plugin-organize-imports": "^3.2.4",
-    "react": "18.2.0",
-    "react-native": "0.74.2",
-    "react-native-builder-bob": "^0.23.2",
-    "release-it": "^15.0.0",
+    "react": "19.0.0",
+    "react-native": "0.78.2",
+    "react-native-builder-bob": "^0.40.13",
+    "release-it": "^17.10.0",
     "turbo": "^1.10.7",
     "typescript": "^5.2.2"
-  },
-  "resolutions": {
-    "@types/react": "^18.2.44"
   },
   "peerDependencies": {
     "react": "*",
@@ -125,53 +132,12 @@
     },
     "plugins": {
       "@release-it/conventional-changelog": {
-        "preset": "angular"
+        "preset": {
+          "name": "angular"
+        }
       }
     }
   },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@react-native",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "experimentalTernaries": false,
-          "printWidth": 80,
-          "tabWidth": 2,
-          "useTabs": false,
-          "semi": true,
-          "singleQuote": false,
-          "quoteProps": "as-needed",
-          "jsxSingleQuote": false,
-          "trailingComma": "none",
-          "bracketSpacing": true,
-          "bracketSameLine": false,
-          "jsxBracketSameLine": false,
-          "arrowParens": "always",
-          "rangeStart": 0,
-          "requirePragma": false,
-          "insertPragma": false,
-          "proseWrap": "preserve",
-          "htmlWhitespaceSensitivity": "css",
-          "endOfLine": "lf",
-          "embeddedLanguageFormatting": "auto",
-          "singleAttributePerLine": false,
-          "vueIndentScriptAndStyle": false,
-          "plugins": [
-            "prettier-plugin-organize-imports"
-          ]
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ],
   "prettier": {
     "experimentalTernaries": false,
     "printWidth": 80,
@@ -203,8 +169,13 @@
     "source": "src",
     "output": "lib",
     "targets": [
-      "commonjs",
-      "module",
+      "codegen",
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
       [
         "typescript",
         {
@@ -216,7 +187,20 @@
   "codegenConfig": {
     "name": "RNAdManagerMobileAdsSpec",
     "type": "modules",
-    "jsSrcsDir": "src"
+    "jsSrcsDir": "src/spec",
+    "outputDir": {
+      "ios": "ios/generated",
+      "android": "android/generated"
+    },
+    "android": {
+      "javaPackageName": "com.admanagermobileads"
+    },
+    "includesGeneratedCode": true
+  },
+  "create-react-native-library": {
+    "type": "turbo-module",
+    "languages": "kotlin-objc",
+    "version": "0.49.8"
   },
   "dependencies": {
     "@iabtcf/core": "^1.5.6"

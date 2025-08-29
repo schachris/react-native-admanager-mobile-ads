@@ -1,30 +1,28 @@
 import {
   EmitterSubscription,
   NativeEventEmitter,
-  NativeModules,
   Platform,
   findNodeHandle
 } from "react-native";
 
-import type { AdLoaderDetails, Spec } from "./NativeAdManagerMobileAds";
+import type {
+  AdAssets,
+  AdLoaderDetails,
+  Spec
+} from "./spec/NativeAdManagerMobileAds";
 import type {
   AdTrackingTransparencyStatus,
   GADAdRequestOptions,
   GADInitializationStatus
 } from "./types";
 
+import AdManagerModule from "./spec/NativeAdManagerMobileAds";
+
 const LINKING_ERROR =
   `The package 'react-native-admanager-mobile-ads' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: "" }) +
   "- You rebuilt the app after installing the package\n" +
   "- You are not using Expo Go\n";
-
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
-
-const AdManagerModule: Spec = isTurboModuleEnabled
-  ? require("./NativeAdManagerMobileAds").default
-  : NativeModules.AdManagerMobileAds;
 
 export const NativeAdManager: Spec = AdManagerModule
   ? AdManagerModule
@@ -108,7 +106,7 @@ class AdManagerController {
     this.defaultClickHandler = undefined;
   }
 
-  createAdLoader<AdFormatType>(options: {
+  createAdLoader<AdFormatType extends AdAssets = AdAssets>(options: {
     adUnitId: string;
     formatIds: ReadonlyArray<string>;
     videoConfig?: {
@@ -121,16 +119,20 @@ class AdManagerController {
       shouldRequestMultipleImages?: boolean;
     };
   }) {
-    return NativeAdManager.createAdLoader<AdFormatType>(options);
+    return NativeAdManager.createAdLoader(options) as unknown as Promise<
+      AdLoaderDetails<AdFormatType>
+    >;
   }
-  loadRequest<AdFormatType, AdTargetingOptions = Record<string, string>>(
-    adLoaderId: string,
-    options: GADAdRequestOptions<AdTargetingOptions>
-  ) {
-    return NativeAdManager.loadRequest<AdFormatType, AdTargetingOptions>(
+  loadRequest<
+    AdFormatType extends AdAssets = AdAssets,
+    AdTargetingOptions = Record<string, string>
+  >(adLoaderId: string, options: GADAdRequestOptions<AdTargetingOptions>) {
+    return NativeAdManager.loadRequest(
       adLoaderId,
       options
-    );
+    ) as unknown as Promise<
+      AdLoaderDetails<AdFormatType> & { targeting: AdTargetingOptions }
+    >;
   }
 
   removeAdLoader(loaderId: string) {
@@ -141,40 +143,58 @@ class AdManagerController {
     return NativeAdManager.getAvailableAdLoaderIds();
   }
 
-  getAdLoaderDetails<AdFormatType>(adLoaderId: string) {
-    return NativeAdManager.getAdLoaderDetails<AdFormatType>(adLoaderId);
+  getAdLoaderDetails<AdFormatType extends AdAssets = AdAssets>(
+    adLoaderId: string
+  ) {
+    return NativeAdManager.getAdLoaderDetails(adLoaderId) as unknown as Promise<
+      AdLoaderDetails<AdFormatType>
+    >;
   }
 
-  setIsDisplayingForLoader<AdFormatType>(loaderId: string) {
-    return NativeAdManager.setIsDisplayingForLoader<AdFormatType>(loaderId);
+  setIsDisplayingForLoader<AdFormatType extends AdAssets = AdAssets>(
+    loaderId: string
+  ) {
+    return NativeAdManager.setIsDisplayingForLoader(
+      loaderId
+    ) as unknown as Promise<AdLoaderDetails<AdFormatType>>;
   }
 
-  setIsDisplayingOnViewForLoader<AdFormatType>(
+  setIsDisplayingOnViewForLoader<AdFormatType extends AdAssets = AdAssets>(
     loaderId: string,
     adViewRef: React.RefObject<any>
   ) {
     if (adViewRef && adViewRef.current) {
       const adViewTag = findNodeHandle(adViewRef.current);
       if (adViewTag) {
-        return NativeAdManager.setIsDisplayingOnViewForLoader<AdFormatType>(
+        return NativeAdManager.setIsDisplayingOnViewForLoader(
           loaderId,
           adViewTag
-        );
+        ) as unknown as Promise<AdLoaderDetails<AdFormatType>>;
       }
     }
     throw new Error("AdViewRef was not found or resolved in null value");
   }
 
-  makeLoaderOutdated<AdFormatType>(loaderId: string) {
-    return NativeAdManager.makeLoaderOutdated<AdFormatType>(loaderId);
+  makeLoaderOutdated<AdFormatType extends AdAssets = AdAssets>(
+    loaderId: string
+  ) {
+    return NativeAdManager.makeLoaderOutdated(loaderId) as unknown as Promise<
+      AdLoaderDetails<AdFormatType>
+    >;
   }
 
-  destroyLoader<AdFormatType>(loaderId: string) {
-    return NativeAdManager.destroyLoader<AdFormatType>(loaderId);
+  destroyLoader<AdFormatType extends AdAssets = AdAssets>(loaderId: string) {
+    return NativeAdManager.destroyLoader(loaderId) as unknown as Promise<
+      AdLoaderDetails<AdFormatType>
+    >;
   }
 
-  recordImpression<AdFormatType>(adLoaderId: string) {
-    return NativeAdManager.recordImpression<AdFormatType>(adLoaderId);
+  recordImpression<AdFormatType extends AdAssets = AdAssets>(
+    adLoaderId: string
+  ) {
+    return NativeAdManager.recordImpression(adLoaderId) as unknown as Promise<
+      AdLoaderDetails<AdFormatType>
+    >;
   }
 
   async setCustomClickHandlerForLoader(
@@ -194,15 +214,20 @@ class AdManagerController {
     delete this.customClickHandler[loaderId];
   }
 
-  recordClick<AdFormatType>(adLoaderId: string) {
-    return NativeAdManager.recordClick<AdFormatType>(adLoaderId);
+  recordClick<AdFormatType extends AdAssets = AdAssets>(adLoaderId: string) {
+    return NativeAdManager.recordClick(adLoaderId) as Promise<
+      AdLoaderDetails<AdFormatType> & { assetKey: string }
+    >;
   }
 
-  recordClickOnAssetKey<AdFormatType>(adLoaderId: string, assetKey: string) {
-    return NativeAdManager.recordClickOnAssetKey<AdFormatType>(
+  recordClickOnAssetKey<AdFormatType extends AdAssets = AdAssets>(
+    adLoaderId: string,
+    assetKey: string
+  ) {
+    return NativeAdManager.recordClickOnAssetKey(
       adLoaderId,
       assetKey
-    );
+    ) as Promise<AdLoaderDetails<AdFormatType> & { assetKey: string }>;
   }
 }
 

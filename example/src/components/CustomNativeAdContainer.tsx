@@ -3,40 +3,41 @@ import React, { useCallback, useState } from "react";
 import { StyleProp, Text, View, ViewStyle } from "react-native";
 
 import {
+  AdAssets,
   CustomNativeAdHookReturnType,
   useVisibleCustomNativeAd,
   type AdQueueLoader
 } from "react-native-admanager-mobile-ads";
 import { VisibilityAwareView } from "react-native-visibility-aware-view";
 
-type CustomAdContext<AdFormatType, Targeting> = CustomNativeAdHookReturnType<
-  AdFormatType,
+type CustomAdContext<
+  AdFormatType extends AdAssets,
   Targeting
-> & {
+> = CustomNativeAdHookReturnType<AdFormatType, Targeting> & {
   visible: boolean;
 };
 
 const Context: React.Context<CustomAdContext<any, any>> = React.createContext<
   CustomAdContext<any, any>
 >({} as any);
-export function useAd<F>() {
+export function useAd<F extends AdAssets>() {
   return React.useContext<CustomAdContext<F, any>>(Context).ad;
 }
-export function useAdState<F>() {
+export function useAdState<F extends AdAssets>() {
   return React.useContext<CustomAdContext<F, any>>(Context).state;
 }
-export function useAdClick<F>() {
+export function useAdClick<F extends AdAssets>() {
   return React.useContext<CustomAdContext<F, any>>(Context).click;
 }
-export function useAdImpressionTracker<F>() {
+export function useAdImpressionTracker<F extends AdAssets>() {
   return React.useContext<CustomAdContext<F, any>>(Context).tracker.impressions;
 }
 
-export function useCustomNativeAdContext<F, T>() {
+export function useCustomNativeAdContext<F extends AdAssets, T>() {
   return React.useContext<CustomAdContext<F, T>>(Context);
 }
 
-export function CustomNativeAdContainer<T>({
+export function CustomNativeAdContainer<T extends AdAssets>({
   children,
   adLoader,
   style,

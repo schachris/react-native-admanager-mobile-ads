@@ -3,13 +3,13 @@ import { TurboModuleRegistry } from "react-native";
 
 import { Int32, UnsafeObject } from "react-native/Libraries/Types/CodegenTypes";
 
-import { GADNativeAdImageProps } from "./types";
+import { GADNativeAdImageProps } from "../types";
 
-type AdAssets = Record<string, string | GADNativeAdImageProps>;
+export type AdAssets = { [key: string]: string | GADNativeAdImageProps };
 
-export type AdDetails<AdFormatType = AdAssets> = {
+export type AdDetails<AdFormatType extends AdAssets = AdAssets> = {
   formatId: string;
-  responseInfo: Record<string, any>;
+  responseInfo: { [key: string]: Object };
   assets: AdFormatType;
   assetKeys: keyof AdFormatType;
 };
@@ -25,12 +25,25 @@ enum AdState {
   Outdated = 6
 }
 
-export type AdLoaderDetails<AdFormatType = AdAssets> = {
+export type AdLoaderDetails<AdFormatType extends AdAssets = AdAssets> = {
   id: string;
   adUnitId: string;
   formatIds: string[];
   state: AdState;
   ad?: AdDetails<AdFormatType>;
+};
+
+type LoaderDetails = {
+  id: string;
+  adUnitId: string;
+  formatIds: string[];
+  state: AdState;
+  ad?: {
+    formatId: string;
+    responseInfo: { [key: string]: Object };
+    assets: AdAssets;
+    assetKeys: string[];
+  };
 };
 
 export interface Spec extends TurboModule {
@@ -45,7 +58,7 @@ export interface Spec extends TurboModule {
   setCustomDefaultClickHandler(): Promise<void>;
   removeCustomDefaultClickHandler(): Promise<void>;
 
-  createAdLoader<AdFormatType>(options: {
+  createAdLoader(options: {
     adUnitId: string;
     formatIds: ReadonlyArray<string>;
     videoConfig?: {
@@ -61,47 +74,37 @@ export interface Spec extends TurboModule {
       disableImageLoading?: boolean;
       shouldRequestMultipleImages?: boolean;
     };
-  }): Promise<AdLoaderDetails<AdFormatType>>;
-  loadRequest<AdFormatType, AdTargetingOptions = Record<string, string>>(
+  }): Promise<LoaderDetails>;
+  loadRequest(
     adLoaderId: string,
     options: UnsafeObject
-  ): Promise<AdLoaderDetails<AdFormatType> & { targeting: AdTargetingOptions }>;
+  ): Promise<LoaderDetails & { targeting: Object }>;
 
   removeAdLoader(loaderId: string): Promise<ReadonlyArray<string>>;
 
   getAvailableAdLoaderIds(): Promise<string[]>;
-  getAdLoaderDetails<AdFormatType>(
-    adLoaderId: string
-  ): Promise<AdLoaderDetails<AdFormatType>>;
+  getAdLoaderDetails(adLoaderId: string): Promise<LoaderDetails>;
 
-  setIsDisplayingForLoader<AdFormatType>(
-    loaderId: string
-  ): Promise<AdLoaderDetails<AdFormatType>>;
-  setIsDisplayingOnViewForLoader<AdFormatType>(
+  setIsDisplayingForLoader(loaderId: string): Promise<LoaderDetails>;
+  setIsDisplayingOnViewForLoader(
     loaderId: string,
     viewTag: Int32
-  ): Promise<AdLoaderDetails<AdFormatType>>;
-  makeLoaderOutdated<AdFormatType>(
-    loaderId: string
-  ): Promise<AdLoaderDetails<AdFormatType>>;
-  destroyLoader<AdFormatType>(
-    loaderId: string
-  ): Promise<AdLoaderDetails<AdFormatType>>;
+  ): Promise<LoaderDetails>;
+  makeLoaderOutdated(loaderId: string): Promise<LoaderDetails>;
+  destroyLoader(loaderId: string): Promise<LoaderDetails>;
 
-  recordImpression<AdFormatType>(
-    adLoaderId: string
-  ): Promise<AdLoaderDetails<AdFormatType>>;
+  recordImpression(adLoaderId: string): Promise<LoaderDetails>;
 
   setCustomClickHandlerForLoader(loaderId: string): Promise<void>;
   removeCustomClickHandlerForLoader(loaderId: string): Promise<void>;
 
-  recordClick<AdFormatType>(
+  recordClick(
     adLoaderId: string
-  ): Promise<AdLoaderDetails<AdFormatType> & { assetKey: string }>;
-  recordClickOnAssetKey<AdFormatType>(
+  ): Promise<LoaderDetails & { assetKey: string }>;
+  recordClickOnAssetKey(
     adLoaderId: string,
     assetKey: string
-  ): Promise<AdLoaderDetails<AdFormatType> & { assetKey: string }>;
+  ): Promise<LoaderDetails & { assetKey: string }>;
 
   // event emitter
   addListener: (eventName: string) => void;

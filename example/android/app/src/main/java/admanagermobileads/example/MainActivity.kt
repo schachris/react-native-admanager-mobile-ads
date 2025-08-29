@@ -1,4 +1,4 @@
-package com.admanagermobileadsexample
+package admanagermobileads.example
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

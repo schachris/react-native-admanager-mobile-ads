@@ -1,3 +1,5 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -23,9 +25,10 @@ target 'AdManagerMobileAdsExample' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'AdManagerMobileAdsExampleTests' do
-    inherit! :complete
-    # Pods for testing
+
+  # Run Codegen during development for the example app.
+  pre_install do |installer|
+    system("cd ../../ && npx bob build --target codegen")
   end
 
   post_install do |installer|
