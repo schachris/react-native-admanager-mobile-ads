@@ -138,7 +138,7 @@ The React Native AdManager Mobile Ads module provides out of the box support for
 
 > This is mostly copied from https://docs.page/invertase/react-native-admanager-mobile-ads/european-user-consent. as invertase did a great work on it.
 
-### Understanding AdMob Ads
+### Understanding Ads
 
 Ads served by Google can be categorized as personalized or non-personalized, both requiring consent from users in the EEA. By default,
 ad requests to Google serve personalized ads, with ad selection based on the user's previously collected data. Users outside of the EEA do not require consent.

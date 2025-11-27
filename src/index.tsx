@@ -1,7 +1,9 @@
 export * from "./useCustomNativeAd";
-export { useVisibleCustomNativeAd } from "./useVisibleCustomNativeAd";
+export * from "./useVisibleCustomNativeAd";
 
-export { AdQueueLoader } from "./AdQueueLoader";
+export * from "./AdLoader";
+export * from "./AdQueueLoader";
+export * from "./useFireAfterVisibilityDuration";
 
 export * from "./AdManager";
 export * from "./spec/NativeAdManagerMobileAds";
