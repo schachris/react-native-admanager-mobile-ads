@@ -18,6 +18,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.gms.ads.admanager.AdManagerAdRequest;
 import com.google.android.gms.ads.nativead.NativeCustomFormatAd;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -117,9 +118,9 @@ public class AdManagerMobileAdsModule extends AdManagerMobileAdsSpec {
     try{
       String adUnitId = options.getString("adUnitId");
       ReadableArray formatIds = options.getArray("formatIds");
-      String formatId = formatIds.getString(0);
       ReadableMap videoOptions = options.getMap("videoOptions");
-      CustomNativeAdLoader loader = AdManagerImpl.main().createAdLoader(this.getReactApplicationContext(), adUnitId, formatId);
+      List<String> formatIdsAsString = formatIds != null ? Utils.convertReadableArrayToStringArray(formatIds) : new ArrayList<>();
+      CustomNativeAdLoader loader = AdManagerImpl.main().createAdLoader(this.getReactApplicationContext(), adUnitId, formatIdsAsString);
       loader.setVideoOptions(AdManagerImpl.getVideoOptions(videoOptions));
       promise.resolve(loader.getDetails().toWriteableMap());
     }catch (Throwable error){

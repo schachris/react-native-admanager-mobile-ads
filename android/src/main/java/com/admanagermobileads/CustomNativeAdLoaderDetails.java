@@ -8,6 +8,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.ads.nativead.NativeCustomFormatAd;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CustomNativeAdLoaderDetails {
@@ -20,11 +21,10 @@ public class CustomNativeAdLoaderDetails {
 
   public NativeCustomFormatAd receivedAd;
 
-  public CustomNativeAdLoaderDetails(String id, String adUnitId, String formatId, CustomNativeAdState state) {
+  public CustomNativeAdLoaderDetails(String id, String adUnitId, List<String> formatIds, CustomNativeAdState state) {
     this.id = id;
     this.adUnitId = adUnitId;
-    this.formatIds = new ArrayList<>();
-    this.formatIds.add(formatId);
+    this.formatIds = formatIds;
     this.state = state;
   }
 

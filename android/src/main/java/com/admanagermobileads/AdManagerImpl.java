@@ -74,8 +74,8 @@ public class AdManagerImpl  {
   }
 
 
-  public CustomNativeAdLoader createAdLoader(ReactApplicationContext context, String adUnitId, String formatId) {
-    CustomNativeAdLoader loader = new CustomNativeAdLoader(context, adUnitId, formatId);
+  public CustomNativeAdLoader createAdLoader(ReactApplicationContext context, String adUnitId, List<String> formatIds) {
+    CustomNativeAdLoader loader = new CustomNativeAdLoader(context, adUnitId, formatIds);
     this.adLoaders.put(loader.getLoaderId(), loader);
     return loader;
   }

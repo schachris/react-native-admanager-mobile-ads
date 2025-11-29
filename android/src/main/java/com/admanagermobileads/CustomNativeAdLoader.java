@@ -20,13 +20,14 @@ import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.gms.ads.nativead.NativeCustomFormatAd;
 
+import java.util.List;
 import java.util.UUID;
 
 public class CustomNativeAdLoader {
 
   private String loaderId;
   private String adUnitId;
-  private String formatId;
+  private List<String> formatIds;
   private CustomNativeAdState _adState;
   private CustomNativeAdError error;
 
@@ -47,12 +48,12 @@ public class CustomNativeAdLoader {
     void onStateChanged(CustomNativeAdLoader loader, CustomNativeAdState oldState, CustomNativeAdState newState);
   }
 
-  CustomNativeAdLoader(ReactApplicationContext context, String adUnitId, String formatId) {
+  CustomNativeAdLoader(ReactApplicationContext context, String adUnitId, List<String> formatIds) {
     UUID uuid = UUID.randomUUID();
     this.loaderId = uuid.toString();
 
     this.adUnitId = adUnitId;
-    this.formatId = formatId;
+    this.formatIds = formatIds;
     this.reactApplicationContext = context;
     this.error = null;
     this._adState = CustomNativeAdState.CustomNativeAdStateInit;
@@ -87,9 +88,9 @@ public class CustomNativeAdLoader {
     return this.loaderId;
   }
 
-  public String getFormatId() {
-    return this.formatId;
-  }
+//  public String getFormatId() {
+//    return this.formatId;
+//  }
 
   public Boolean hasCustomClickHandler() {
     return this.customClickListener != null;
@@ -144,15 +145,16 @@ public class CustomNativeAdLoader {
   }
 
   public CustomNativeAdLoaderDetails getDetails() {
-    CustomNativeAdLoaderDetails details = new CustomNativeAdLoaderDetails(this.loaderId, this.adUnitId, this.formatId, this._adState);
+    CustomNativeAdLoaderDetails details = new CustomNativeAdLoaderDetails(this.loaderId, this.adUnitId, this.formatIds, this._adState);
     details.setReceivedAd(this.receivedAd);
     return details;
   }
 
   private void prepareForAdLoading() {
-    this.adLoaderBuilder.forCustomFormatAd(this.getFormatId(), new NativeCustomFormatAd.OnCustomFormatAdLoadedListener() {
-      @Override
-      public void onCustomFormatAdLoaded(@NonNull NativeCustomFormatAd nativeCustomFormatAd) {
+    for (String formatId : this.formatIds){
+      this.adLoaderBuilder.forCustomFormatAd(formatId, new NativeCustomFormatAd.OnCustomFormatAdLoadedListener() {
+        @Override
+        public void onCustomFormatAdLoaded(@NonNull NativeCustomFormatAd nativeCustomFormatAd) {
           // If this callback occurs after the activity is destroyed, you
           // must call destroy and return or you may get a memory leak.
           // Note `isDestroyed()` is a method on Activity.
@@ -181,7 +183,8 @@ public class CustomNativeAdLoader {
           CustomNativeAdLoader.this.adLoaderCompletionListener.onAdReceived(CustomNativeAdLoader.this, nativeCustomFormatAd);
           CustomNativeAdLoader.this.adLoaderCompletionListener = null;
         }
-    }, this.customClickListener);
+      }, this.customClickListener);
+    }
     this.adLoaderBuilder.withNativeAdOptions(CustomNativeAdLoader.this.adOptionBuilder.build());
     this.adLoaderBuilder.withAdListener(new AdListener() {
       @Override
